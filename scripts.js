@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             disableDarkMode();
         }
-
         localStorage.setItem("darkMode", selectedMode);
     });
 
@@ -29,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         body.classList.add("dark-mode");
         messageInput.classList.add("dark-mode");
         chatContainer.classList.add("dark-mode");
+        
     }
 
     function disableDarkMode() {
@@ -38,63 +38,91 @@ document.addEventListener('DOMContentLoaded', function () {
         chatContainer.classList.remove("dark-mode");
     }
 
-
     darkModeToggle.addEventListener("change", function() {
         const selectedMode = darkModeToggle.value;
         localStorage.setItem("darkMode", selectedMode);
     });
 
-    
-    sendButton.addEventListener('click', async function () {
-      const message = messageInput.value;
-      if (message) {
-        try {
-          const apiUrl = 'https://corsproxy.io/?https://blackbox.chatbotmesss.repl.co/ask?';
-          const response = await axios.get(apiUrl, { params: { q: message } });
-          const data = response.data;
-  
-          chatMessages.innerHTML += `<div class="user-message"><br>You: ${message}</div>`;
-  
-          if (data.message !== "") {
-            const aiResponse = data.message;
-  
-            
-            if (isCodeResponse(aiResponse)) {
-              const formattedCode = highlightCode(aiResponse);
-              chatMessages.innerHTML += `<div class="ai-message"><br>AI: ${formattedCode}</div>`;
-            } else {
-              chatMessages.innerHTML += `<div class="ai-message"><br>AI: ${data.message}</div>`;
-            }
-          } else {
-            console.error("Sorry, unable to get a response from the AI");
-          }
-        } catch (err) {
-          console.error(err);
-          console.log("An error occurred while fetching the data");
-        }
-      }
-    });
-  
-    
-    function isCodeResponse(response) {
+    function respond(){
         
-      if(response.trim().startsWith("```")) {
-        console.log(response)
-        return true;
-      }
-      
+    }
+
+    sendButton.addEventListener('click', async function () {
+        const message = messageInput.value;
+        if (message) {
+            try {
+                const apiUrl = 'https://corsproxy.io/?https://blackbox.chatbotmesss.repl.co/ask?';
+                const response = await axios.get(apiUrl, { params: { q: message } });
+                const data = response.data;
+
+                if (data.message !== "") {
+                    const aiResponse = data.message;
+
+                    if(isCode(aiResponse)){
+                        highlight(aiResponse);
+                    } else {
+                        lBl(aiResponse);
+                    }
+                    
+                } else {
+                    console.error("Sorry, unable to get a response from the AI");
+                }
+            } catch (err) {
+                console.error(err);
+                console.log("An error occurred while fetching the data");
+            }
+        }
+    });
+
+    function lBl(response) {
+        const paragraphs = response.split('\n\n');
+        const aiMessageElement = document.createElement('div');
+        aiMessageElement.className = 'ai-message';
+        chatMessages.appendChild(aiMessageElement);
+
+        for (let i = 0; i < paragraphs.length; i++) {
+            aiMessageElement.innerHTML += paragraphs[i];
+            if (i < paragraphs.length - 1) {
+                aiMessageElement.innerHTML += '<br><br>';
+            }
+        }
     }
   
-    function highlightCode(code) {
-        const codeElement = document.createElement('code');
-        codeElement.textContent = code; 
-        hljs.highlightElement(codeElement);
-      
-        const preElement = document.createElement('pre');
-        preElement.appendChild(codeElement);
-      
-        return preElement.outerHTML;
-      }
-  
-  });
-  
+    function isCode(response) {
+        if (response.trim().startsWith("```")) {
+            console.log(response)
+            return true;
+        }
+    }
+
+    function highlight(text) {
+        try {
+            const aiMessageElement = document.createElement('pre');
+            aiMessageElement.className = 'ai-message';
+            chatMessages.appendChild(aiMessageElement);
+    
+            const codeElement = document.createElement('code');
+            codeElement.style.backgroundColor = 'black';
+            codeElement.style.color = 'white';
+            aiMessageElement.appendChild(codeElement);
+    
+            let currentLetterIndex = 0;
+    
+            function displayLetters() {
+                if (currentLetterIndex <= text.length) {
+                    codeElement.textContent = text.slice(0, currentLetterIndex);
+                    if (currentLetterIndex < text.length) {
+                        setTimeout(displayLetters, 10); 
+                    } else {
+                        hljs.highlightElement(codeElement);
+                    }
+                    currentLetterIndex++;
+                }
+            }
+    
+            displayLetters();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+});
