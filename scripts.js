@@ -43,9 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem("darkMode", selectedMode);
     });
 
-    function respond(){
-        
-    }
 
     sendButton.addEventListener('click', async function () {
         const message = messageInput.value;
@@ -55,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const response = await axios.get(apiUrl, { params: { q: message } });
                 const data = response.data;
 
+                chatMessages.innerHTML += `<br><div class="user-message">User: ${message}</div> `
                 if (data.message !== "") {
                     const aiResponse = data.message;
 
