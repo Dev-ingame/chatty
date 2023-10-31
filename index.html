@@ -3,24 +3,28 @@
 <head>
     <title>Chat Website</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.13/jsrender.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="scripts.js"></script>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat">
             <div class="chat-messages" id="chat-messages">
-                
+                <p>This Is A Artificial Intelegence Chat Bot Made by Kenny Using GoogleGpt</p>
             </div>
             <div class="chat-input">
-                <input type="text" id="message-input" placeholder="Type your message...">
+                <textarea id="message-input" placeholder="Type your message...."></textarea>
                 <button id="send-button">Send</button>
             </div>
         </div>
     </div>
-
-    
+    <div class="option">
+        <select id="mode">
+            <option value="light">Light Mode</option>
+            <option value="dark">Dark Mode</option>
+        </select>
+    </div>
 </body>
 </html>
