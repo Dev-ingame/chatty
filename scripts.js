@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             disableDarkMode();
         }
+
         localStorage.setItem("darkMode", selectedMode);
     });
 
@@ -43,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem("darkMode", selectedMode);
     });
 
+    function respond(){
+        
+    }
 
     sendButton.addEventListener('click', async function () {
         const message = messageInput.value;
@@ -52,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const response = await axios.get(apiUrl, { params: { q: message } });
                 const data = response.data;
 
-                chatMessages.innerHTML += `<br><div class="user-message">User: ${message}</div> `
+                chatMessages.innerHTML += `<div class="user-message">User: ${message}</div>`
+
                 if (data.message !== "") {
                     const aiResponse = data.message;
 
@@ -71,21 +76,33 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-
     function lBl(response) {
-        const paragraphs = response.split('\n\n');
         const aiMessageElement = document.createElement('div');
         aiMessageElement.className = 'ai-message';
         chatMessages.appendChild(aiMessageElement);
 
-        for (let i = 0; i < paragraphs.length; i++) {
-            aiMessageElement.innerHTML += paragraphs[i];
-            if (i < paragraphs.length - 1) {
-                aiMessageElement.innerHTML += '<br><br>';
+        const paragraphs = response.split('\n');
+
+        let currentParagraphIndex = 0;
+        let currentLetterIndex = 0;
+
+        const interval = setInterval(function () {
+            if (currentParagraphIndex < paragraphs.length) {
+                const paragraph = paragraphs[currentParagraphIndex];
+                if (currentLetterIndex < paragraph.length) {
+                    aiMessageElement.innerHTML += paragraph[currentLetterIndex];
+                    currentLetterIndex++;
+                } else {
+                    aiMessageElement.innerHTML += '<br>';
+                    currentParagraphIndex++;
+                    currentLetterIndex = 0;
+                }
+            } else {
+                clearInterval(interval);
             }
-        }
+        }, 10);
     }
-  
+    
     function isCode(response) {
         if (response.trim().startsWith("```")) {
             console.log(response)
@@ -117,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     currentLetterIndex++;
                 }
             }
-    
             displayLetters();
         } catch (err) {
             console.log(err);
